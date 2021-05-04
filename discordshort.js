@@ -63,9 +63,13 @@ global.ds = {
                 data: global.ds.data.db.user
             }).save();
         }
+        let override = await global.ds.getUserData(id);
+        for(key of Object.keys(data)) {
+            override[key] = data[key];
+        }
         await userdat.findOneAndUpdate({_id: id ? id : global.ds.data.config.author.id},{
             _id: id ? id : global.ds.data.config.author.id,
-            data
+            data: override
         });
     },
     async getUserData(id) {
@@ -90,9 +94,13 @@ global.ds = {
                 data: global.ds.data.db.server
             }).save();
         }
+        let override = await global.ds.getGuildData(id);
+        for(key of Object.keys(data)) {
+            override[key] = data[key];
+        }
         await serverdat.findOneAndUpdate({_id: id ? id : global.ds.data.config.guild.id},{
             _id: id ? id : global.ds.data.config.guild.id,
-            data
+            data: override
         });
     },
     async getGuildData(id) {
