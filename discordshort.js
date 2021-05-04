@@ -70,6 +70,11 @@ global.ds = {
         let dat = await userdat.findOne({_id: id ? id : global.ds.data.config.author.id})
         return dat ? dat.data : null;
     },
+    async getAllUserData() {
+        let userdat = schemas.user;
+        let res = await userdat.find({});
+        return res;
+    },
     async setGuildData(data, id) {
         let serverdat = schemas.server;
         if(typeof data != 'object') error('the "data" param in setGuildData needs to be an object');
@@ -89,6 +94,11 @@ global.ds = {
         let serverdat = schemas.server;
         let dat = await serverdat.findOne({_id: id ? id : global.ds.data.config.guild.id})
         return dat ? dat.data : null;
+    },
+    async getAllGuildData() {
+        let serverdat = schemas.server;
+        let res = await serverdat.find({});
+        return res;
     },
     on(id, f) {
         if(id == 'message') {
