@@ -17,7 +17,11 @@ global.ds = {
     data: {
         commands: [],
         connected: false,
-        onmessage() {}
+        onmessage() {},
+        db: {
+            user: {},
+            server: {}
+        }
     },
     bot: new Discord.Client(),
     async login(id) {
@@ -56,24 +60,26 @@ global.ds = {
         if(!await userdat.findOne({_id: id ? id : global.ds.data.config.author.id})) {
             await new userdat({
                 _id: id ? id : global.ds.data.config.author.id,
-                data
+                data: global.ds.data.db.user
             }).save();
-        } else {
-            await userdat.findOneAndUpdate({_id: id ? id : global.ds.data.config.author.id},{
-                _id: id ? id : global.ds.data.config.author.id,
-                data
-            });
         }
+        await userdat.findOneAndUpdate({_id: id ? id : global.ds.data.config.author.id},{
+            _id: id ? id : global.ds.data.config.author.id,
+            data
+        });
     },
     async getUserData(id) {
         let userdat = schemas.user;
         let dat = await userdat.findOne({_id: id ? id : global.ds.data.config.author.id})
-        return dat ? dat.data : null;
+        return dat ? dat.data : global.ds.data.db.user;
     },
     async getAllUserData() {
         let userdat = schemas.user;
         let res = await userdat.find({});
         return res;
+    },
+    async defaultUserData(data) {
+        global.ds.data.db.user = data;
     },
     async setGuildData(data, id) {
         let serverdat = schemas.server;
@@ -81,24 +87,26 @@ global.ds = {
         if(!await serverdat.findOne({_id: id ? id : global.ds.data.config.guild.id})) {
             await new serverdat({
                 _id: id ? id : global.ds.data.config.guild.id,
-                data
+                data: global.ds.data.db.server
             }).save();
-        } else {
-            await serverdat.findOneAndUpdate({_id: id ? id : global.ds.data.config.guild.id},{
-                _id: id ? id : global.ds.data.config.guild.id,
-                data
-            });
         }
+        await serverdat.findOneAndUpdate({_id: id ? id : global.ds.data.config.guild.id},{
+            _id: id ? id : global.ds.data.config.guild.id,
+            data
+        });
     },
     async getGuildData(id) {
         let serverdat = schemas.server;
         let dat = await serverdat.findOne({_id: id ? id : global.ds.data.config.guild.id})
-        return dat ? dat.data : null;
+        return dat ? dat.data : global.ds.data.db.server;
     },
     async getAllGuildData() {
         let serverdat = schemas.server;
         let res = await serverdat.find({});
         return res;
+    },
+    async defaultGuildData(data) {
+        global.ds.data.db.server = data;
     },
     on(id, f) {
         if(id == 'message') {
