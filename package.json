@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "mongoose": "^5.12.7",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
+  },
+  "name": "discord.short",
+  "version": "1.0.0",
+  "description": "make discord bots faster",
+  "main": "discordshort.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "CHANGE IN A SEC"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "fast"
+  ],
+  "author": "ephf",
+  "license": "ISC"
+}
