@@ -1,7 +1,6 @@
 let Discord = require('discord.js');
 
 let parse = require('./parser');
-require('./anti-idle')();
 
 let schemas = require('./schemas');
 
@@ -36,6 +35,9 @@ global.ds = {
                     info('Couldn\'t connect to MongoDB');
                 }
             });
+        }
+        if(id.heroku) {
+            require('./anti-idle')(id);
         }
     },
     Command: class Comamnd {

@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function(id) {
     let http = require('http');
     let port = process.env.PORT || 3000;
     let rp = require('request-promise');
@@ -22,7 +22,7 @@ module.exports = function() {
     });
     
     setInterval(function() {
-        rp('https://commandbot-ephf.herokuapp.com/')
+        rp(`https://${id.heroku.name}.herokuapp.com/`)
             .then(function(html) {
                 console.log('[discord.short.anti-idle] Requesting Success');
             })
