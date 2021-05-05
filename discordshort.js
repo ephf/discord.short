@@ -29,7 +29,7 @@ global.ds = {
         global.ds.bot.login(id.botToken);
         global.ds.bot.on('message', parse.command);
         global.ds.bot.on('ready', () => info('Your bot is online'));
-        if(id.mongo.username) {
+        if(id.mongo) {
             await require('./mongo')(id).then(async item => {
                 try {
                     info('Connected to MongoDB');
@@ -74,7 +74,8 @@ global.ds = {
     },
     async getUserData(id) {
         let userdat = schemas.user;
-        let dat = await userdat.findOne({_id: id ? id : global.ds.data.config.author.id})
+        let dat = await userdat.findOne({_id: id ? id : global.ds.data.config.author.id});
+        if(!dat.data) dat.data = {};
         return dat ? dat.data : global.ds.data.db.user;
     },
     async getAllUserData() {
@@ -105,7 +106,8 @@ global.ds = {
     },
     async getGuildData(id) {
         let serverdat = schemas.server;
-        let dat = await serverdat.findOne({_id: id ? id : global.ds.data.config.guild.id})
+        let dat = await serverdat.findOne({_id: id ? id : global.ds.data.config.guild.id});
+        if(!dat.data) dat.data = {};
         return dat ? dat.data : global.ds.data.db.server;
     },
     async getAllGuildData() {
