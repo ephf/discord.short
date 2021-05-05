@@ -5,11 +5,11 @@ let parse = require('./parser');
 let schemas = require('./schemas');
 
 function info() {
-    console.log('\x1b[36m[discord.short] ' + Array.from(arguments).join('\n[discord.short] '));
+    console.log('\x1b[36m[discord.short] ' + Array.from(arguments).join('\n[discord.short] ') + '\x1b[0m');
 }
 
 function error() {
-    let err = new Error('\x1b[31m[discord.short error] ' + Array.from(arguments).join('\n[discord.short error] ') + '\n');
+    let err = new Error('\x1b[31m[discord.short error] ' + Array.from(arguments).join('\n[discord.short error] ') + '\n\x1b[0m');
     throw err;
 }
 
