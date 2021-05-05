@@ -8,26 +8,26 @@ module.exports = function(id) {
             res.write('data');
         });
         req.on('end', function() {
-            console.log('[discord.short.anti-idle] Server Success');
+            console.log('\x1b[33m[discord.short.anti-idle] Server Success');
             res.end();
         });
     });
 
     server.listen(port, function(error) {
         if (error) {
-            console.log('[discord.short.anti-idle] Something went wrong while running the dummy server:\n' + error);
+            console.log('\x1b[31m[discord.short.anti-idle] Something went wrong while running the dummy server:\n' + error);
         } else {
-            console.log(`[discord.short.anti-idle] Dummy server is listening on port https://localhost:${port}`);
+            console.log(`\x1b[33m[discord.short.anti-idle] Dummy server is listening on port https://localhost:${port}`);
         }
     });
     
     setInterval(function() {
         rp(`https://${id.heroku.name}.herokuapp.com/`)
             .then(function(html) {
-                console.log('[discord.short.anti-idle] Requesting Success');
+                console.log('\x1b[33m[discord.short.anti-idle] Requesting Success');
             })
             .catch(function(err) {
-                console.log('[discord.short.anti-idle] Requesting Error:\n'+ err);
+                console.log('\x1b[31m[discord.short.anti-idle] Requesting Error:\n'+ err);
             });
     }, 20 * 60 * 1000);
 }

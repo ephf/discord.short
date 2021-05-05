@@ -9,7 +9,7 @@ String.prototype.remFirst = function(item) {
 }
 
 module.exports = {
-    command(m) {
+    async command(m) {
         global.ds.data.onmessage();
         if(global.ds.data.connected) {
             let text = m.content;
@@ -48,7 +48,8 @@ module.exports = {
                                 send(value) {m.channel.send(value)}
                             }
                             global.ds.data.config = config;
-                            command.execute(config);
+                            await command.execute(config);
+                            return;
                         }
                     }
                 }
