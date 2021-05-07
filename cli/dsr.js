@@ -6,7 +6,7 @@ const { execSync } = require("child_process");
 let dev = false;
 if(fs.existsSync('Dev')) dev = true;
 
-const bots = require('./bots.json');
+const bots = JSON.parse(fs.readFileSync('./discord.short/bots.json'));
 const out = require('./message');
 
 if(bots.length < 1) out.error('You don\'t have any bots to run');

@@ -24,8 +24,14 @@ if(args[0] == 'createbot') {
             name: '...'
         }
     }, null, 2)});`);
-    let bots = JSON.parse(fs.readFileSync(dev ? './cli/bots.json' : './node_modules/discord.short/cli/bots.json', 'utf-8'));
+    if(!fs.existsSync('./discord.short')) {
+        fs.mkdirSync('./discord.short');
+    }
+    if(!fs.existsSync('./discord.short/bots.json')) {
+        fs.writeFileSync('./discord.short/bots.json', '[]');
+    }
+    let bots = JSON.parse(fs.readFileSync('./discord.short/bots.json', 'utf-8'));
     bots.push(args[1]);
-    fs.writeFileSync(dev ? './cli/bots.json' : './node_modules/discord.short/cli/bots.json', JSON.stringify(bots));
+    fs.writeFileSync('./discord.short/bots.json', JSON.stringify(bots));
     return out.success(`Created file: "${args[1]}.js"`);
 }
