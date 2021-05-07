@@ -10,13 +10,12 @@ String.prototype.remFirst = function(item) {
 
 module.exports = {
     async command(m) {
-        global.ds.data.onmessage();
-        if(global.ds.data.connected) {
+        if(global.currentDS.data.connected) {
             let text = m.content;
-            let prefix = global.ds.data.prefix;
+            let prefix = global.currentDS.data.prefix;
             if(text.split(prefix).length > 1 && text.split(prefix)[0] == '') {
                 text = text.remFirst(prefix);
-                for(command of global.ds.data.commands) {
+                for(command of global.currentDS.data.commands) {
                     let names = command.aliases;
                     if(!names) {
                         names = [command.name];
@@ -47,7 +46,7 @@ module.exports = {
                                 args: text.split(' '),
                                 send(value) {m.channel.send(value)}
                             }
-                            global.ds.data.config = config;
+                            global.currentDS.data.config = config;
                             await command.execute(config);
                             return;
                         }

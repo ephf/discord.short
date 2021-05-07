@@ -6,7 +6,7 @@
     "request-promise": "^4.2.6"
   },
   "name": "discord.short",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "make discord bots faster",
   "main": "discordshort.js",
   "devDependencies": {},
@@ -26,5 +26,12 @@
     "mongodb"
   ],
   "author": "ephf",
-  "license": "ISC"
+  "license": "ISC",
+  "bin": {
+    "ds": "./cli.js"
+  },
+  "bugs": {
+    "url": "https://github.com/ephf/discord.short/issues"
+  },
+  "homepage": "https://github.com/ephf/discord.short#readme"
 }
