@@ -5,16 +5,16 @@ let parse = require('./parser');
 let schemas = require('./mongodb/schemas');
 
 function info() {
-    console.log(`${process.env.PORT ? '' : '\x1b[36m'}[discord.short] ` + Array.from(arguments).join('\n[discord.short] ') + (process.env.PORT ? '' : '\x1b[0m'));
+    console.log(`${process.env.PORT ? '' : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT ? '' : '\x1b[0m'} ${process.env.PORT ? '' : '\x1b[36m'}[discord.short] ` + Array.from(arguments).join('\n[discord.short] ') + (process.env.PORT ? '' : '\x1b[0m'));
 }
 
 function error() {
-    let err = new Error(`${process.env.PORT ? '' : '\x1b[31m'}[discord.short error] ` + Array.from(arguments).join('\n[discord.short error] ') + (process.env.PORT ? '' : '\x1b[0m'));
+    let err = new Error(`${process.env.PORT ? '' : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT ? '' : '\x1b[0m'} ${process.env.PORT ? '' : '\x1b[31m'}[discord.short error] ` + Array.from(arguments).join('\n[discord.short error] ') + (process.env.PORT ? '' : '\x1b[0m'));
     throw err;
 }
 
 class Client {
-    constructor() {
+    constructor(name) {
         this.data = {
             commands: [],
             connected: false,
@@ -24,6 +24,7 @@ class Client {
                 server: {}
             }
         }
+        this.name = name;
         this.bot = new Discord.Client()
         global.currentDS = this;
         this.Command = class Command {
