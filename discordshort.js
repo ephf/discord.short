@@ -28,12 +28,74 @@ class Client {
         this.bot = new Discord.Client()
         global.currentDS = this;
         this.Command = class Command {
-            constructor(config, ds) {
+            constructor(config) {
                 if(!config.name) error('Your command is missing a name');
                 if(!config.execute) error('Your command is missing an execute function');
-                global.currentDS.data.commands.push(config);
+
+                if(config.setSlash) {
+                    if(!config.description) error('Your command is missing a description');
+
+                    global.currentDS.bot.on('ready', async () => {
+                        await global.currentDS.bot.api.applications(global.currentDS.bot.user.id).guilds(config.guild).commands.post({
+                            data: {
+                                name: config.name,
+                                description: config.description,
+                                options: [
+                                    {
+                                        name: 'arguments',
+                                        description: 'The arguments after the command',
+                                        required: false,
+                                        type: 3
+                                    }
+                                ]
+                            }
+                        });
+                        global.currentDS.bot.ws.on('INTERACTION_CREATE', async interaction => {
+                            const command = interaction.data.name;
+                            const options = interaction.data.options;
+
+                            let args = [];
+                            if(options) {
+                                args = options[0].value.split(' ');
+                            }
+
+                            if(command === config.name) {
+                                await config.execute({
+                                    slashSend(content) {
+                                        global.currentDS.bot.api.interactions(interaction.id, interaction.token).callback.post({
+                                            data: {
+                                                type: 4,
+                                                data: {
+                                                    content
+                                                }
+                                            }
+                                        });
+                                    },
+                                    interaction,
+                                    channel: global.currentDS.bot.channels.cache.get(interaction.channel_id),
+                                    guild: global.currentDS.bot.guilds.cache.get(interaction.guild_id),
+                                    author: interaction.member.user,
+                                    args,
+                                    send(content) {
+                                        global.currentDS.bot.channels.cache.get(interaction.channel_id).send(content);
+                                    }
+                                });
+                            }
+                        });
+                    });
+                } else {
+                    global.currentDS.data.commands.push(config);
+                }
             }
         }
+    }
+
+    async deleteSlashCommand(id, guild) {
+        await this.bot.api.applications(this.bot.user.id).guilds(guild).commands(id).delete();
+    }
+
+    async getSlashCommands(guild) {
+        return await this.bot.api.applications(this.bot.user.id).guilds(guild).commands.get();
     }
 
     setPrefix(prefix) {
@@ -122,7 +184,7 @@ class Client {
         this.bot.on('message', message => {
             parse.command(message, this);
         });
-        this.bot.on('ready', () => info('Your bot is online'));
+        this.bot.on('ready', async () => { info('Your bot is online'); if(this.ready) await this.ready(); });
         if(id.mongo) {
             await require('./mongodb/mongo')(id).then(async item => {
                 try {
@@ -133,6 +195,8 @@ class Client {
                     info('Couldn\'t connect to MongoDB');
                 }
             });
+        } else {
+            this.data.connected = true;
         }
         if(id.heroku) {
             require('./heroku/anti-idle')(id);
