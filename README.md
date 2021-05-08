@@ -1,3 +1,10 @@
+<div align="center">
+  <p>
+    <a href="https://discord.gg/EqkxHnFkns"><img src="https://img.shields.io/discord/839993561280938035?color=7289da&logo=discord&logoColor=white" alt="Discord server" /></a>
+    <a href="https://www.npmjs.com/package/discord.short"><img src="https://img.shields.io/npm/dt/discord.short.svg?maxAge=3600" alt="NPM downloads" /></a>
+  </p>
+</div>
+
 # Discord.Short  (Discord.js Addon)
 
 💵 Discord.js Addon to allow for bots to be made faster and for free!
