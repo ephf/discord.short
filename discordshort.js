@@ -25,8 +25,9 @@ class Client {
             }
         }
         this.name = name;
-        this.bot = new Discord.Client()
+        this.bot = new Discord.Client();
         global.currentDS = this;
+        this.reactEvents = [];
         this.Command = class Command {
             constructor(config) {
                 if(!config.name) error('Your command is missing a name');
@@ -88,6 +89,27 @@ class Client {
                 }
             }
         }
+    }
+
+    async getNextReply() {
+        global.reply = false;
+        return await new Promise(function(resolve, reject) {
+            let interval = setInterval(function() {
+                if(global.reply) {
+                    clearInterval(interval);
+                    resolve(global.reply);
+                }
+            }, 1);
+        });
+    }
+
+    reactEvent(message, reaction, f) {
+        message.react(reaction);
+        this.reactEvents.push({
+            message,
+            reaction,
+            f
+        });
     }
 
     async deleteSlashCommand(id, guild) {
@@ -182,7 +204,22 @@ class Client {
         this.data.id = id;
         this.bot.login(id.botToken);
         this.bot.on('message', message => {
+            if(message.author.id == this.bot.user.id) global.reply = message;
             parse.command(message, this);
+        });
+        this.bot.on('messageReactionAdd', (reaction, user) => {
+            this.reactEvents.forEach(react => {
+                if(react.reaction == reaction.emoji.name && reaction.message.id == react.message.id && user.id != this.bot.user.id) {
+                    react.f({
+                        user,
+                        channel: react.message.channel,
+                        message: react.message,
+                        send(text) {
+                            react.message.channel.send(text);
+                        } 
+                    });
+                }
+            });
         });
         this.bot.on('ready', async () => { info('Your bot is online'); if(this.ready) await this.ready(); });
         if(id.mongo) {
