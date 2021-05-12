@@ -1,4 +1,5 @@
 let Discord = require('discord.js');
+let fs = require('fs');
 
 let parse = require('./parser');
 
@@ -14,7 +15,7 @@ function error() {
 }
 
 class Client {
-    constructor(name) {
+    constructor(name, settings) {
         this.data = {
             commands: [],
             connected: false,
@@ -24,10 +25,15 @@ class Client {
                 server: {}
             }
         }
+        this.settings = settings || {
+            antiIdle: true,
+            mongoConnect: true
+        }
         this.name = name;
         this.bot = new Discord.Client();
         global.currentDS = this;
         this.reactEvents = [];
+        this.unreactEvents = [];
         this.Command = class Command {
             constructor(config) {
                 if(!config.name) error('Your command is missing a name');
@@ -110,6 +116,15 @@ class Client {
             reaction,
             f
         });
+    }
+
+    unreactEvent(message, reaction, f) {
+        message.react(reaction);
+        this.unreactEvents.push({
+            message,
+            reaction,
+            f
+        })
     }
 
     async deleteSlashCommand(id, guild) {
@@ -221,8 +236,22 @@ class Client {
                 }
             });
         });
+        this.bot.on('messageReactionRemove', (reaction, user) => {
+            this.unreactEvents.forEach(react => {
+                if(react.reaction == reaction.emoji.name && reaction.message.id == react.message.id && user.id != this.bot.user.id) {
+                    react.f({
+                        user,
+                        channel: react.message.channel,
+                        message: react.message,
+                        send(text) {
+                            react.message.channel.send(text);
+                        } 
+                    });
+                }
+            });
+        });
         this.bot.on('ready', async () => { info('Your bot is online'); if(this.ready) await this.ready(); });
-        if(id.mongo) {
+        if(id.mongo && this.settings.mongoConnect) {
             await require('./mongodb/mongo')(id).then(async item => {
                 try {
                     info('Connected to MongoDB');
@@ -235,7 +264,7 @@ class Client {
         } else {
             this.data.connected = true;
         }
-        if(id.heroku) {
+        if(id.heroku && this.settings.antiIdle) {
             require('./heroku/anti-idle')(id);
         }
     }
