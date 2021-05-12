@@ -26,3 +26,7 @@ $ npm install discord.short -g
 Discode.short is made by ephf,
 
 Pull requests are welcome, anything big should provide an issue or a suggestion on our discord server. [[Linked Here]](https://discord.gg/QctNVtJGU5)
+
+# Extra
+
+⚠ `53.9+ MB` size due to `node.exe`. This is needed for CLI. (Path: `discord.short > cli > node.exe`)
