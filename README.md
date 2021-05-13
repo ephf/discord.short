@@ -11,6 +11,8 @@
 
 📚 Discord.Short has a complete guide!
 
+🔎 Discord.Short typings (WIP!)
+
 # Docs / Installation
 
 Make sure you have NPM downloaded on your machine, then run the command
