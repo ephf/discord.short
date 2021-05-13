@@ -6,11 +6,11 @@ declare const Discord: {
     Client: Client
 }
 
-export class Command {
+declare class Command {
     constructor(config: CommandBuild);
 }
 
-export class Client {
+declare class Client {
     private data: Object;
     private settings: Object;
     private reactEvents: Object[];
