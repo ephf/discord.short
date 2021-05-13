@@ -19,9 +19,9 @@ declare module "discord.short" {
         private unreactEvents: Object[];
 
         public name: String;
-        public readonly bot: BaseClient;
+        public bot: BaseClient;
         public prefix: String;
-        public readonly Command: Command;
+        public Command: Command;
 
         constructor(name: String, settings?: ClientSettings);
 
