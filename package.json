@@ -6,7 +6,7 @@
     "request-promise": "^4.2.6"
   },
   "name": "discord.short",
-  "version": "2.0.2",
+  "version": "2.1.0a",
   "description": "make discord bots faster",
   "main": "discordshort.js",
   "scripts": {
@@ -23,7 +23,8 @@
     "noidle",
     "heroku",
     "mongodb",
-    "cli"
+    "cli",
+    "discord.js"
   ],
   "author": "ephf",
   "license": "ISC",

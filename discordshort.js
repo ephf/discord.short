@@ -119,7 +119,6 @@ class Client {
     }
 
     unreactEvent(message, reaction, f) {
-        message.react(reaction);
         this.unreactEvents.push({
             message,
             reaction,
@@ -175,7 +174,7 @@ class Client {
         return res;
     }
 
-    async defaultUserData(data) {
+    defaultUserData(data) {
         this.data.db.user = data;
     }
 
@@ -211,7 +210,7 @@ class Client {
         return res;
     }
 
-    async defaultGuildData(data) {
+    defaultGuildData(data) {
         this.data.db.server = data;
     }
 
