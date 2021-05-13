@@ -1,18 +1,18 @@
 declare module "discord.short" {
     
-    import { Message, BaseClient, User, Channel, Guild } from "discord.js"
+    import { Message, BaseClient, User, Channel, Guild, WSEventType } from "discord.js"
 
-    export const ds: Client;
+    export const ds: ShortClient;
 
     export const Discord: {
-        Client: Client
+        ShortClient: ShortClient
     }
 
     export class Command {
         constructor(config: CommandBuild);
     }
 
-    export class Client {
+    export class ShortClient {
         private data: Object;
         private settings: Object;
         private reactEvents: Object[];
@@ -39,7 +39,7 @@ declare module "discord.short" {
         public reactEvent(message: Message, reaction: String, callback: Function): void;
         public unreactEvent(message: Message, reaction: String, callback: Function): void;
         public setPrefix(prefix: String): void;
-        public on(event: String, callback: Function): void;
+        public on(event: WSEventType, callback: Function): void;
         public defaultUserData(data: Object): void;
         public defaultGuildData(data: Object): void;
     }

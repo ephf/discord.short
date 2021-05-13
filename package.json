@@ -6,7 +6,7 @@
     "request-promise": "^4.2.6"
   },
   "name": "discord.short",
-  "version": "2.1.0e",
+  "version": "2.1.1",
   "description": "make discord bots faster",
   "main": "discordshort.js",
   "types": "index.d.ts",

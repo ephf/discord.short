@@ -14,7 +14,7 @@ function error() {
     throw err;
 }
 
-class Client {
+class ShortClient {
     constructor(name, settings) {
         this.data = {
             commands: [],
