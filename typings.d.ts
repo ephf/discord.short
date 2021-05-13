@@ -1,16 +1,16 @@
 import { Message, BaseClient, User, Channel, Guild, WSEventType } from "discord.js"
 
-declare const ds: Client;
+export const ds: Client;
 
-declare const Discord: {
+export const Discord: {
     Client: Client
 }
 
-declare class Command {
+export class Command {
     constructor(config: CommandBuild);
 }
 
-declare class Client {
+export class Client {
     private data: Object;
     private settings: Object;
     private reactEvents: Object[];
