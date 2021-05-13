@@ -1,4 +1,4 @@
-import { Client, Message, BaseClient, User, Channel, Guild } from "discord.js"
+import { Message, BaseClient, User, Channel, Guild, WSEventType } from "discord.js"
 
 declare const ds: Client;
 
@@ -7,21 +7,21 @@ declare const Discord: {
 }
 
 export class Command {
-    constructor(config: CommandBuild): void;
+    constructor(config: CommandBuild);
 }
 
 export class Client {
     private data: Object;
     private settings: Object;
-    private reactEvents: Object[] = [];
-    private unreactEvents: Object[] = [];
+    private reactEvents: Object[];
+    private unreactEvents: Object[];
 
     public name: String;
-    public readonly bot: Client;
+    public readonly bot;
     public prefix: String;
     public readonly Command: Command;
 
-    constructor(name: String, settings?: ClientSettings): void;
+    constructor(name: String, settings?: ClientSettings);
 
     public getNextReply(): Promise<void>;
     public deleteSlashCommand(id: String, guild?: string): Promise<void>;
@@ -37,7 +37,7 @@ export class Client {
     public reactEvent(message: Message, reaction: String, callback: Function): void;
     public unreactEvent(message: Message, reaction: String, callback: Function): void;
     public setPrefix(prefix: String): void;
-    public on = BaseClient.on;
+    public on(event: String, callback: Function): void;
     public defaultUserData(data: Object): void;
     public defaultGuildData(data: Object): void;
 }
@@ -76,6 +76,6 @@ type ClientLogin = {
 }
 
 type ClientSettings = {
-    antiIdle?: Boolean = true,
-    mongoConnect?: Boolean = true
+    antiIdle?: Boolean;
+    mongoConnect?: Boolean;
 }
