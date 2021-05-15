@@ -7,11 +7,11 @@
 
 # Discord.Short  (Discord.js Addon)
 
-💵 Discord.js Addon to allow for bots to be made faster and for free!
+💵 Discord.js addon to allow for bots to be made faster and for free!
 
 📚 Discord.Short has a complete guide!
 
-🔎 Discord.Short typings (WIP!)
+🔎 Discord.Short complete JSDoc typings!
 
 # Docs / Installation
 
