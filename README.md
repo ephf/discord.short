@@ -25,9 +25,15 @@ $ npm install discord.short -g
 
 # Contributing
 
-Discode.short is made by ephf,
+Pull requests are welcome, anything big should provide an issue or a suggestion on our discord server. [Linked Here](https://discord.gg/QctNVtJGU5)
 
-Pull requests are welcome, anything big should provide an issue or a suggestion on our discord server. [[Linked Here]](https://discord.gg/QctNVtJGU5)
+# License
+
+Discord.Short is made by ephf,
+
+See here: [Github File](https://github.com/ephf/discord.short/blob/main/license)
+
+ISC License
 
 # Extra
 
