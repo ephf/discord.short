@@ -23,6 +23,7 @@ class Command {
      *  description?: String,
      *  aliases?: String[],
      *  setSlash?: Boolean, // description required
+     *  permissions?: DiscordJS.PermissionString[],
      *  async execute({...}): Promise<void> // has to be async
      * });
      * ```
@@ -38,12 +39,26 @@ class Command {
      *  send(text: String): Promise<void>
      * });
      * ```
+     * ## Failed Permissions
+     * ```
+     * await failedPermissions({
+     *  message: DiscordJS.Message,
+     *  author: DiscordJS.User,
+     *  channel: DiscordJS.Channel,
+     *  guild: DiscordJS.Guild,
+     *  label: String,
+     *  args: String[],
+     *  permissions: DiscordJS.PermissionString[]
+     *  send(text: String): Promise<void>
+     * });
+     * ```
      * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands Creating Bot Commands}**
      * @param {{
      *  name: String,
      *  description?: String,
      *  aliases?: String[],
      *  setSlash?: Boolean,
+     *  permissions?: DiscordJS.PermissionString[],
      *  execute({information}: {
      *      message: DiscordJS.Message,
      *      author: DiscordJS.User,
@@ -51,6 +66,16 @@ class Command {
      *      guild: DiscordJS.Guild,
      *      label: String,
      *      args: String[],
+     *      send(text: String): Promise<void>
+     *  }): Promise<void>,
+     *  failedPermissions?({information}: {
+     *      message: DiscordJS.Message,
+     *      author: DiscordJS.User,
+     *      channel: DiscordJS.Channel,
+     *      guild: DiscordJS.Guild,
+     *      label: String,
+     *      args: String[],
+     *      permissions: DiscordJS.PermissionString[]
      *      send(text: String): Promise<void>
      *  }): Promise<void>
      * }} config - **Argument:** `Command Configuration`
