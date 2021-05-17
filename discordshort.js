@@ -138,6 +138,8 @@ class ShortClient {
             server: {}
         }
     }
+    /** @type {string} */
+    prefix = '!';
     /**
      * ## Discord.Short Command
      * ```
@@ -176,6 +178,19 @@ class ShortClient {
         }
         this.name = name;
         global.currentDS = this;
+    }
+
+    /**
+     * ## Set Code Error Discord Reply
+     * ```
+     * ds.setCodeErrorReply(reply: string);
+     * ```
+     * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands/code-errors Code Errors}**
+     * @param {String} reply - **Argument:** `Discord Error Message`
+     * @returns {void}
+     */
+    setCodeErrorReply(reply) {
+        this.data.error = reply;
     }
 
     /**
@@ -302,7 +317,7 @@ class ShortClient {
      * @returns {void}
      */
     setPrefix(prefix) {
-        this.data.prefix = prefix;
+        this.prefix = prefix;
     }
 
     /**

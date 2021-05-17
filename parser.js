@@ -10,48 +10,36 @@ String.prototype.remFirst = function(item) {
 
 module.exports = {
     async command(m) {
-        if(global.currentDS.data.connected) {
-            let text = m.content;
-            let prefix = global.currentDS.data.prefix;
-            if(text.split(prefix).length > 1 && text.split(prefix)[0] == '') {
-                text = text.remFirst(prefix);
-                for(command of global.currentDS.data.commands) {
-                    let names = command.aliases;
-                    if(!names) {
-                        names = [command.name];
-                    } else {
-                        names.push(command.name);
-                    }
-                    for(com of names) {
-                        let through = text.split('');
-                        text = through;
-                        let found = false;
-                        while(through.length > 1) {
-                            if(through[0] == ' ') {
-                                through.shift();
-                            } else {
-                                found = true;
-                                through = [];
-                            }
-                        }
-                        text = text.join('');
-                        if(found && text.split(com + ' ').length > 1 && text.split(com + ' ')[0] == '' || text.split(com).join('') == '' && text != '') {
-                            text = text.remFirst(com + ' ');
+        const ds = global.currentDS;
+        try {
+            if(ds.data.connected || !ds.settings.mongoConnect || !ds.config.mongo) {
+                for(command of ds.data.commands) {
+                    let names = command.aliases || [];
+                    names.push(command.name);
+                    for(name of names) {
+                        const regex = new RegExp(`${ds.prefix} *${name}`);
+                        if(regex.test(m.content)) {
+                            let args = m.content.replace(regex, '').replace(/^ */, '').split(/ +/);
                             let config = {
                                 message: m,
                                 author: m.author,
                                 channel: m.channel,
                                 guild: m.guild,
-                                label: com,
-                                args: text.split(' '),
+                                label: name,
+                                args,
                                 send(value) {m.channel.send(value)}
                             }
-                            global.currentDS.data.config = config;
+                            ds.data.config = config;
                             await command.execute(config);
                             return;
                         }
                     }
                 }
+            }
+        } catch(e) {
+            console.log(e);
+            if(ds.data.error) {
+                m.channel.send(ds.data.error);
             }
         }
     }
