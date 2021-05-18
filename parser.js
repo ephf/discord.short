@@ -1,6 +1,6 @@
-const ds = require("./discordshort");
+const { Message } = require('discord.js');
 
-String.prototype.remFirst = function(item) {
+String.prototype.remFirst = function (item) {
     let text = this;
     text = text.split(item);
     text.shift();
@@ -9,7 +9,11 @@ String.prototype.remFirst = function(item) {
 }
 
 module.exports = {
-    async command(m, bot) {
+    /**
+     * 
+     * @param {Message} m 
+     */
+    async command(m) {
         const ds = global.currentDS;
         try {
             if(ds.data.connected || !ds.settings.mongoConnect || !ds.config.mongo) {
@@ -23,7 +27,7 @@ module.exports = {
                             let permissions = [];
                             if(command.permissions) {
                                 for(perm of command.permissions) {
-                                    if(!m.guild.members.cache.get(m.author.id).hasPermission(perm)) {
+                                    if(!m.guild.members.cache.get(m.author.id).permissions.has(perm)) {
                                         hasPerm = false;
                                         permissions.push(perm);
                                     }

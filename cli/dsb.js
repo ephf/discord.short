@@ -1,8 +1,8 @@
 #!./node
 
 const fs = require('fs');
-const [,, ...args] = process.argv;
 const out = require('./message');
+const [,, ...args] = process.argv;
 const { execSync } = require('child_process');
 
 if(!fs.existsSync('./discord.short/bots.json')) out.error('You haven\'t made any bots');

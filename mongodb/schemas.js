@@ -1,12 +1,15 @@
-let mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
+
+const user = model('server', new Schema({
+    _id: String,
+    data: Object
+}));
+
+const server = model('server', new Schema({
+    _id: String,
+    data: Object
+}));
 
 module.exports = {
-    user: mongoose.model('user', mongoose.Schema({
-        _id: String,
-        data: Object
-    })),
-    server: mongoose.model('server', mongoose.Schema({
-        _id: String,
-        data: Object
-    }))
+    user, server
 }
