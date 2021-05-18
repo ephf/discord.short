@@ -38,7 +38,7 @@ module.exports = {
                                     guild: m.guild,
                                     label: name,
                                     args,
-                                    send(value) {m.channel.send(value)}
+                                    async send(value) {return await m.channel.send(value)}
                                 }
                                 ds.data.config = config;
                                 await command.execute(config);
