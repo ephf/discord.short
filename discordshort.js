@@ -403,7 +403,7 @@ class ShortClient {
     async getUserData(id) {
         let userdat = schemas.user;
         let dat = await userdat.findOne({_id: id ? id : this.data.config.author.id});
-        if(!dat.data) dat.data = {};
+        if(dat && !dat.data) dat.data = {};
         return dat ? dat.data : this.data.db.user;
     }
 
@@ -475,7 +475,7 @@ class ShortClient {
     async getGuildData(id) {
         let serverdat = schemas.server;
         let dat = await serverdat.findOne({_id: id ? id : this.data.config.guild.id});
-        if(!dat.data) dat.data = {};
+        if(dat && !dat.data) dat.data = {};
         return dat ? dat.data : this.data.db.server;
     }
 
