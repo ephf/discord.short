@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 /**
- * 
+ * Connects to MongoDB
  * @param {string} id 
  * @returns {mongoose} Mongoose
  */
