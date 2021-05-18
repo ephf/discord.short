@@ -545,7 +545,7 @@ class ShortClient {
         this.bot.on('messageReactionAdd', (reaction, user) => {
             this._reactEvents.forEach(react => {
                 if(react.reaction == reaction.emoji.name && reaction.message.id == react.message.id && user.id != this.bot.user.id) {
-                    react.f({
+                    react.callback({
                         user,
                         channel: react.message.channel,
                         message: react.message,
@@ -559,7 +559,7 @@ class ShortClient {
         this.bot.on('messageReactionRemove', (reaction, user) => {
             this._unreactEvents.forEach(react => {
                 if(react.reaction == reaction.emoji.name && reaction.message.id == react.message.id && user.id != this.bot.user.id) {
-                    react.f({
+                    react.callback({
                         user,
                         channel: react.message.channel,
                         message: react.message,
