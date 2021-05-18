@@ -382,7 +382,7 @@ class ShortClient {
             }).save();
         }
         let override = await this.getUserData(id);
-        for(key of Object.keys(data)) {
+        for(let key of Object.keys(data)) {
             override[key] = data[key];
         }
         await userdat.findOneAndUpdate({_id: id ? id : this.data.config.author.id},{
@@ -454,7 +454,7 @@ class ShortClient {
             }).save();
         }
         let override = await this.getGuildData(id);
-        for(key of Object.keys(data)) {
+        for(let key of Object.keys(data)) {
             override[key] = data[key];
         }
         await serverdat.findOneAndUpdate({_id: id ? id : this.data.config.guild.id},{
