@@ -1,17 +1,33 @@
-let DiscordJS = require('discord.js');
-let fs = require('fs');
-
-let parse = require('./parser');
-
-let schemas = require('./mongodb/schemas');
+const parse = require('./parser');
+const schemas = require('./mongodb/schemas');
+const { Client, Channel, User, Message, Guild, WSEventType } = require('discord.js');
 
 function info() {
-    console.log(`${process.env.PORT ? '' : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT ? '' : '\x1b[0m'} ${process.env.PORT ? '' : '\x1b[36m'}[discord.short] ` + Array.from(arguments).join('\n[discord.short] ') + (process.env.PORT ? '' : '\x1b[0m'));
+    console.log(
+        `${process.env.PORT ?
+            ''
+            : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT
+            ? ''
+            : '\x1b[0m'} ${process.env.PORT
+            ? ''
+            : '\x1b[36m'}[discord.short] ` + Array.from(arguments).join('\n[discord.short] ') + (process.env.PORT
+            ? ''
+            : '\x1b[0m')
+    );
 }
 
 function error() {
-    let err = new Error(`${process.env.PORT ? '' : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT ? '' : '\x1b[0m'} ${process.env.PORT ? '' : '\x1b[31m'}[discord.short error] ` + Array.from(arguments).join('\n[discord.short error] ') + (process.env.PORT ? '' : '\x1b[0m'));
-    throw err;
+    throw new Error(
+        `${process.env.PORT
+            ? ''
+            : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT
+            ? ''
+            : '\x1b[0m'} ${process.env.PORT
+            ? ''
+            : '\x1b[31m'}[discord.short error] ` + Array.from(arguments).join('\n[discord.short error] ') + (process.env.PORT
+            ? ''
+            : '\x1b[0m')
+    );
 }
 
 class Command {
@@ -23,17 +39,17 @@ class Command {
      *  description?: String,
      *  aliases?: String[],
      *  setSlash?: Boolean, // description required
-     *  permissions?: DiscordJS.PermissionString[],
+     *  permissions?: import("discord.js").PermissionResolvable[],
      *  async execute({...}): Promise<void> // has to be async
      * });
      * ```
      * ## Execute
      * ```
      * await execute({
-     *  message: DiscordJS.Message,
-     *  author: DiscordJS.User,
-     *  channel: DiscordJS.Channel,
-     *  guild: DiscordJS.Guild,
+     *  message: Message,
+     *  author: User,
+     *  channel: Channel,
+     *  guild: Guild,
      *  label: String,
      *  args: String[],
      *  send(text: String): Promise<void>
@@ -42,40 +58,41 @@ class Command {
      * ## Failed Permissions
      * ```
      * await failedPermissions({
-     *  message: DiscordJS.Message,
-     *  author: DiscordJS.User,
-     *  channel: DiscordJS.Channel,
-     *  guild: DiscordJS.Guild,
+     *  message: Message,
+     *  author: User,
+     *  channel: Channel,
+     *  guild: Guild,
      *  label: String,
      *  args: String[],
-     *  permissions: DiscordJS.PermissionString[]
+     *  permissions: import("discord.js").PermissionResolvable[];
      *  send(text: String): Promise<void>
      * });
      * ```
      * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands Creating Bot Commands}**
+     * 
      * @param {{
-     *  name: String,
-     *  description?: String,
-     *  aliases?: String[],
-     *  setSlash?: Boolean,
-     *  permissions?: DiscordJS.PermissionString[],
+     *  name: String;
+     *  description?: String;
+     *  aliases?: String[];
+     *  setSlash?: Boolean;
+     *  permissions?: import("discord.js").PermissionResolvable[];
      *  execute({information}: {
-     *      message: DiscordJS.Message,
-     *      author: DiscordJS.User,
-     *      channel: DiscordJS.Channel,
-     *      guild: DiscordJS.Guild,
-     *      label: String,
-     *      args: String[],
+     *      message: Message;
+     *      author: User;
+     *      channel: Channel;
+     *      guild: Guild;
+     *      label: String;
+     *      args: String[];
      *      send(text: String): Promise<void>
      *  }): Promise<void>,
      *  failedPermissions?({information}: {
-     *      message: DiscordJS.Message,
-     *      author: DiscordJS.User,
-     *      channel: DiscordJS.Channel,
-     *      guild: DiscordJS.Guild,
-     *      label: String,
-     *      args: String[],
-     *      permissions: DiscordJS.PermissionString[]
+     *      message: Message;
+     *      author: User;
+     *      channel: Channel;
+     *      guild: Guild;
+     *      label: String;
+     *      args: String[];
+     *      permissions: import("discord.js").PermissionResolvable[];
      *      send(text: String): Promise<void>
      *  }): Promise<void>
      * }} config - **Argument:** `Command Configuration`
@@ -102,14 +119,14 @@ class Command {
                         ]
                     }
                 });
+
                 global.currentDS.bot.ws.on('INTERACTION_CREATE', async interaction => {
                     const command = interaction.data.name;
                     const options = interaction.data.options;
 
                     let args = [];
-                    if(options) {
+                    if(options) 
                         args = options[0].value.split(' ');
-                    }
 
                     if(command === config.name) {
                         await config.execute({
@@ -176,10 +193,10 @@ class ShortClient {
     /**
      * ## Discord.js Client
      * ```
-     * new DiscordJS.Client(token: String);
+     * new Client(token: String);
      * ```
      */
-    bot = new DiscordJS.Client();
+    bot = new Client();
     /**
      * ## ShortClient
      * ```
@@ -223,7 +240,7 @@ class ShortClient {
      * ```
      * const reply = await ds.getNextReply();
      * ```
-     * @returns {Promise<DiscordJS.Message>}
+     * @returns {Promise<Message>}
      * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands/reactions-command-replies Reactions / Command Replies}**
      */
     async getNextReply() {
@@ -241,24 +258,24 @@ class ShortClient {
     /**
      * ## Reaction Event
      * ```
-     * ds.reactEvent(message: DiscordJS.Message, reaction: String, callback: Function);
+     * ds.reactEvent(message: Message, reaction: String, callback: Function);
      * ```
      * ## Reaction Event Callback
      * ```
      * callback({
-     *  user: DiscordJS.User
-     *  channel: DiscordJS.Channel,
-     *  message: DiscordJS.Message,
+     *  user: User
+     *  channel: Channel,
+     *  message: Message,
      *  send(text: String): Promise<void>
      * });
      * ```
      * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands/reactions-command-replies Reactions / Command Replies}**
-     * @param {DiscordJS.Message} message - **Argument:** `Message To Add Event To`
+     * @param {Message} message - **Argument:** `Message To Add Event To`
      * @param {String} reaction - **Argument:** `Emoji / ID Of Reaction`
      * @param {function({
-     *  user: DiscordJS.User,
-     *  channel: DiscordJS.Channel
-     *  message: DiscordJS.Message
+     *  user: User,
+     *  channel: Channel
+     *  message: Message
      *  send(text: String): Promise<void>
      * })} callback - **Argument:** `Callback Function When Reaction Is Added`
      * @returns {void}
@@ -275,24 +292,24 @@ class ShortClient {
     /**
      * ## Remove Reaction Event
      * ```
-     * ds.unreactEvent(message: DiscordJS.Message, reaction: String, callback: Function);
+     * ds.unreactEvent(message: Message, reaction: String, callback: Function);
      * ```
      * ## Remove Reaction Event Callback
      * ```
      * callback({
-     *  user: DiscordJS.User
-     *  channel: DiscordJS.Channel,
-     *  message: DiscordJS.Message,
+     *  user: User
+     *  channel: Channel,
+     *  message: Message,
      *  send(text: String): Promise<void>
      * });
      * ```
      * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands/reactions-command-replies Reactions / Command Replies}**
-     * @param {DiscordJS.Message} message - **Argument:** `Message To Add Event To`
+     * @param {Message} message - **Argument:** `Message To Add Event To`
      * @param {String} reaction - **Argument:** `Emoji / ID Of Reaction`
      * @param {function({
-     *  user: DiscordJS.User,
-     *  channel: DiscordJS.Channel
-     *  message: DiscordJS.Message
+     *  user: User,
+     *  channel: Channel
+     *  message: Message
      *  send(text: String): Promise<void>
      * })} callback - **Argument:** `Callback Function When Reaction Is Removed`
      * @returns {void}
@@ -308,7 +325,7 @@ class ShortClient {
     /**
      * ## Delete Slash Command
      * ```
-     * await ds.deleteSlashCommand(id: String, guild?: DiscordJS.Guild);
+     * await ds.deleteSlashCommand(id: String, guild?: Guild);
      * ```
      * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands/slash-commands Slash Commands}**
      * @param {String} id - **Argument:** `ID Of Slash Command`
@@ -348,13 +365,13 @@ class ShortClient {
     /**
      * ## On Event
      * ```
-     * ds.on(event: DiscordJS.WSEventType, callback: Function);
+     * ds.on(event: WSEventType, callback: Function);
      * ```
      * ### Alternative
      * ```
-     * ds.bot.on(event: DiscordJS.WSEventType, callback: Function);
+     * ds.bot.on(event: WSEventType, callback: Function);
      * ```
-     * @param {DiscordJS.WSEventType} event - **Argument:** `Discord Event (Listed)`
+     * @param {WSEventType} event - **Argument:** `Discord Event (Listed)`
      * @param {Function} callback - **Argument:** `Callback Function When Event Is Triggered`
      * @returns {void}
      */
