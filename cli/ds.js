@@ -19,6 +19,7 @@ if(args[0] == 'createbot') {
         mongo: {
             username: '...',
             password: '...',
+            cluster: '...',
             database: 'discordshort'
         },
         heroku: {
