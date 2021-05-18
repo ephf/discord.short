@@ -264,10 +264,10 @@ class ShortClient {
      * @returns {void}
      */
     reactEvent(message, reaction, callback) {
-        message.react(reaction);
+        message.react(/<:[\w~]+:[0123456789]+>/.test(reaction) ? /<:[\w~]+:([0123456789]+)>/.exec(reaction)[1] : reaction);
         this._reactEvents.push({
             message,
-            reaction,
+            reaction: /<:[\w~]+:[0123456789]+>/.test(reaction) ? /<:([\w~]+):/.exec(reaction)[1] : reaction,
             callback
         });
     }
@@ -300,9 +300,9 @@ class ShortClient {
     unreactEvent(message, reaction, callback) {
         this._unreactEvents.push({
             message,
-            reaction,
+            reaction: /<:[\w~]+:[0123456789]+>/.test(reaction) ? /<:([\w~]+):/.exec(reaction)[1] : reaction,
             callback
-        })
+        });
     }
 
     /**
