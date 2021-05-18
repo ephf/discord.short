@@ -53,7 +53,7 @@ module.exports = {
                                     label: name,
                                     args,
                                     permissions,
-                                    send(value) {m.channel.send(value)}
+                                    send(value) {return await m.channel.send(value)}
                                 }
                                 ds.data.config = config;
                                 await command.failedPermissions(config);
