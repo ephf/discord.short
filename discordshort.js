@@ -607,8 +607,7 @@ class ShortClient {
     }
 }
 
-const Discord = {
-    ShortClient
-}
+const Discord = DiscordJS;
+Discord.ShortClient = ShortClient;
 
 module.exports = Discord;

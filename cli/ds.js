@@ -27,18 +27,18 @@ if(args[0] == 'createbot') {
                 name: '...'
             }
         }, null, 2)});`);
-    if(!fs.existsSync('./discord.short')) 
-        fs.mkdirSync('./discord.short');
+    if(!fs.existsSync('./node_modules/@discord.short')) 
+        fs.mkdirSync('./node_modules/@discord.short');
     
-    if(!fs.existsSync('./discord.short/bots.json')) 
-        fs.writeFileSync('./discord.short/bots.json', '{}');
+    if(!fs.existsSync('./node_modules/@discord.short/bots.json')) 
+        fs.writeFileSync('./node_modules/@discord.short/bots.json', '{}');
     
-    let bots = JSON.parse(fs.readFileSync('./discord.short/bots.json', 'utf-8'));
+    let bots = JSON.parse(fs.readFileSync('./node_modules/@discord.short/bots.json', 'utf-8'));
     bots[args[1]] = {
         antiIdle: true,
         mongoConnect: true
     }
-    fs.writeFileSync('./discord.short/bots.json', JSON.stringify(bots));
+    fs.writeFileSync('./node_modules/@discord.short/bots.json', JSON.stringify(bots));
     out.success(`Created file: "${args[1]}.js"`);
 }
 
@@ -56,18 +56,18 @@ if(args[0] == 'addbot') {
     if (!args[1])
         out.error('You need to specify a bot to add');
     
-    if (!fs.existsSync('./discord.short')) 
-        fs.mkdirSync('./discord.short');
+    if (!fs.existsSync('./node_modules/@discord.short')) 
+        fs.mkdirSync('./node_modules/@discord.short');
     
-    if (!fs.existsSync('./discord.short/bots.json')) 
-        fs.writeFileSync('./discord.short/bots.json', '[]');
+    if (!fs.existsSync('./node_modules/@discord.short/bots.json')) 
+        fs.writeFileSync('./node_modules/@discord.short/bots.json', '[]');
     
-    let bots = JSON.parse(fs.readFileSync('./discord.short/bots.json', 'utf-8'));
+    let bots = JSON.parse(fs.readFileSync('./node_modules/@discord.short/bots.json', 'utf-8'));
     bots[args[1]] = {
         antiIdle: true,
         mongoConnect: true
     }
-    fs.writeFileSync('./discord.short/bots.json', JSON.stringify(bots));
+    fs.writeFileSync('./node_modules/@discord.short/bots.json', JSON.stringify(bots));
     out.success(`Added "${args[1]}"`);
 }
 
@@ -75,10 +75,10 @@ if(args[0] == 'rembot') {
     if (!args[1])
         out.error('You need to specify a bot to remove');
     
-    if (!fs.existsSync('./discord.short') || !fs.existsSync('./discord.short/bots.json'))
+    if (!fs.existsSync('./node_modules/@discord.short') || !fs.existsSync('./node_modules/@discord.short/bots.json'))
         out.error('You don\'t have any bots recognized by discord.short');
     
-    let bots = JSON.parse(fs.readFileSync('./discord.short/bots.json', 'utf-8'));
+    let bots = JSON.parse(fs.readFileSync('./node_modules/@discord.short/bots.json', 'utf-8'));
 
     if (bots.length < 1)
         out.error('You don\'t have any bots recognized by discord.short');
@@ -91,6 +91,6 @@ if(args[0] == 'rembot') {
         }
     }
     if(Object.keys(temp).length == Object.keys(bots).length) out.error('That bot isn\'t currently known by discord.short');
-    fs.writeFileSync('./discord.short/bots.json', JSON.stringify(temp));
+    fs.writeFileSync('./node_modules/@discord.short/bots.json', JSON.stringify(temp));
     out.success(`Removed "${args[1]}"`);
 }
