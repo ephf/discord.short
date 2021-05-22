@@ -607,7 +607,7 @@ class ShortClient {
     }
 }
 
-const Discord = DiscordJS;
+const Discord = require('discord.js');
 Discord.ShortClient = ShortClient;
 
 module.exports = Discord;
