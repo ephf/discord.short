@@ -21,7 +21,7 @@ module.exports = {
                     let names = command.aliases || [];
                     names.push(command.name);
                     for(name of names) {
-                        const regex = new RegExp(`${ds.prefix} *${name} +|${ds.prefix} *${name}$`);
+                        const regex = new RegExp(`^\\${ds.prefix} *${name} +|^\\${ds.prefix} *${name}$`);
                         if(regex.test(m.content)) {
                             let hasPerm = true;
                             let permissions = [];
