@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const user = model('server', new Schema({
+const user = model('user', new Schema({
     _id: String,
     data: Object
 }));
