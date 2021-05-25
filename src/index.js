@@ -1,162 +1,9 @@
-const parse = require('./parser');
+const parse = require('discord.short/src/function/parser');
 const schemas = require('./mongodb/schemas');
-const { Client, Channel, User, Message, Guild, WSEventType } = require('discord.js');
+const { Client, Channel, User, Message, Collection } = require('discord.js');
 
-function info() {
-    console.log(
-        `${process.env.PORT ?
-            ''
-            : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT
-            ? ''
-            : '\x1b[0m'} ${process.env.PORT
-            ? ''
-            : '\x1b[36m'}[discord.short] ` + Array.from(arguments).join('\n[discord.short] ') + (process.env.PORT
-            ? ''
-            : '\x1b[0m')
-    );
-}
-
-function error() {
-    throw new Error(
-        `${process.env.PORT
-            ? ''
-            : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT
-            ? ''
-            : '\x1b[0m'} ${process.env.PORT
-            ? ''
-            : '\x1b[31m'}[discord.short error] ` + Array.from(arguments).join('\n[discord.short error] ') + (process.env.PORT
-            ? ''
-            : '\x1b[0m')
-    );
-}
-
-class Command {
-    /**
-     * ## Command
-     * ```
-     * new ds.Command({
-     *  name: String,
-     *  description?: String,
-     *  aliases?: String[],
-     *  setSlash?: Boolean, // description required
-     *  permissions?: import("discord.js").PermissionResolvable[],
-     *  async execute({...}): Promise<void> // has to be async
-     * });
-     * ```
-     * ## Execute
-     * ```
-     * await execute({
-     *  message: Message,
-     *  author: User,
-     *  channel: Channel,
-     *  guild: Guild,
-     *  label: String,
-     *  args: String[],
-     *  send(text: String): Promise<void>
-     * });
-     * ```
-     * ## Failed Permissions
-     * ```
-     * await failedPermissions({
-     *  message: Message,
-     *  author: User,
-     *  channel: Channel,
-     *  guild: Guild,
-     *  label: String,
-     *  args: String[],
-     *  permissions: import("discord.js").PermissionResolvable[];
-     *  send(text: String): Promise<void>
-     * });
-     * ```
-     * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands Creating Bot Commands}**
-     * 
-     * @param {{
-     *  name: String;
-     *  description?: String;
-     *  aliases?: String[];
-     *  setSlash?: Boolean;
-     *  permissions?: import("discord.js").PermissionResolvable[];
-     *  execute({information}: {
-     *      message: Message;
-     *      author: User;
-     *      channel: Channel;
-     *      guild: Guild;
-     *      label: String;
-     *      args: String[];
-     *      send(text: String): Promise<void>
-     *  }): Promise<void>,
-     *  failedPermissions?({information}: {
-     *      message: Message;
-     *      author: User;
-     *      channel: Channel;
-     *      guild: Guild;
-     *      label: String;
-     *      args: String[];
-     *      permissions: import("discord.js").PermissionResolvable[];
-     *      send(text: String): Promise<void>
-     *  }): Promise<void>
-     * }} config - **Argument:** `Command Configuration`
-     */
-    constructor(config) {
-        if(!config.name) error('Your command is missing a name');
-        if(!config.execute) error('Your command is missing an execute function');
-
-        if(config.setSlash) {
-            if(!config.description) error('Your command is missing a description');
-
-            global.currentDS.bot.on('ready', async () => {
-                await global.currentDS.bot.api.applications(global.currentDS.bot.user.id).guilds(config.guild).commands.post({
-                    data: {
-                        name: config.name,
-                        description: config.description,
-                        options: [
-                            {
-                                name: 'arguments',
-                                description: 'The arguments after the command',
-                                required: false,
-                                type: 3
-                            }
-                        ]
-                    }
-                });
-
-                global.currentDS.bot.ws.on('INTERACTION_CREATE', async interaction => {
-                    const command = interaction.data.name;
-                    const options = interaction.data.options;
-
-                    let args = [];
-                    if(options) 
-                        args = options[0].value.split(' ');
-
-                    if(command === config.name) {
-                        await config.execute({
-                            slashSend(content) {
-                                global.currentDS.bot.api.interactions(interaction.id, interaction.token).callback.post({
-                                    data: {
-                                        type: 4,
-                                        data: {
-                                            content
-                                        }
-                                    }
-                                });
-                            },
-                            interaction,
-                            channel: global.currentDS.bot.channels.cache.get(interaction.channel_id),
-                            guild: global.currentDS.bot.guilds.cache.get(interaction.guild_id),
-                            author: interaction.member.user,
-                            args,
-                            send(content) {
-                                global.currentDS.bot.channels.cache.get(interaction.channel_id).send(content);
-                            }
-                        });
-                    }
-                });
-            });
-        } else {
-            global.currentDS.data.commands.push(config);
-        }
-    }
-}
+const { info, error } = require('./function/message');
+const Command = require('discord.short/src/function/command');
 
 /**
  * ## Discord.Short ShortClient
@@ -178,7 +25,8 @@ class ShortClient {
         db: {
             user: {},
             server: {}
-        }
+        },
+        events: {}
     }
     /** @type {string} */
     prefix = '!';
@@ -197,6 +45,16 @@ class ShortClient {
      * ```
      */
     bot = new Client();
+    /**
+     * ## ShortClient Commands (Collection)
+     * ```
+     * ds.commands.map(command => {
+     *  // for each command
+     * });
+     * ```
+     * **Docs: {@link https://ephf.gitbook.io/discord-short/all-commands Creating Bot Commands}**
+     */
+    commands = new Collection();
     /**
      * ## ShortClient
      * ```
@@ -363,20 +221,26 @@ class ShortClient {
     }
 
     /**
-     * ## On Event
+     * @typedef DSEvent
+     * @type {'MONGOCONNECT' | 'IDLEPING' | 'ANTIIDLEREADY'}
+     */
+
+    /**
+     * ## Discord.Short On Event
      * ```
-     * ds.on(event: WSEventType, callback: Function);
+     * ds.on(event: DSEvent, callback: Function);
      * ```
-     * ### Alternative
+     * ## Discord.js On Event
      * ```
      * ds.bot.on(event: WSEventType, callback: Function);
      * ```
-     * @param {WSEventType} event - **Argument:** `Discord Event (Listed)`
+     * @param {DSEvent} event - **Argument:** `Discord Event (Listed)`
      * @param {Function} callback - **Argument:** `Callback Function When Event Is Triggered`
      * @returns {void}
+     * **Docs: {@link https://ephf.gitbook.io/discord-short/events Creating Bot Commands}**
      */
     on(event, callback) {
-        this.bot.on(event, callback);
+        this.data.events[event] = callback;
     }
 
     /**
@@ -597,17 +461,20 @@ class ShortClient {
                 catch {
                     info('Couldn\'t connect to MongoDB');
                 }
+                if(typeof this.data.events['MONGOCONNECT'] == 'function') this.data.events['MONGOCONNECT']();
             });
         } else {
             this.data.connected = true;
         }
         if(config.heroku && this.settings.antiIdle) {
-            require('./heroku/anti-idle')(config);
+            require('./heroku/anti-idle')(config, this);
         }
     }
 }
 
-const Discord = require('discord.js');
-Discord.ShortClient = ShortClient;
+const Discord = {
+    ShortClient,
+    ...require('discord.js')
+}
 
 module.exports = Discord;

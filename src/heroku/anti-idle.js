@@ -2,7 +2,7 @@
  * 
  * @param {string} id 
  */
-module.exports = function (id) {
+module.exports = function (id, client) {
     let http = require('http');
     let port = process.env.PORT || 3000;
     let rp = require('request-promise');
@@ -52,6 +52,7 @@ module.exports = function (id) {
                     ? ''
                     : '\x1b[0m'}`
             );
+            if(typeof client.data.events['ANTIIDLEREADY'] == 'function') client.data.events['ANTIIDLEREADY']();
         }
     });
     
@@ -59,6 +60,7 @@ module.exports = function (id) {
         rp(`https://${id.heroku.name}.herokuapp.com/`)
             .then(function(html) {
                 console.log(`${process.env.PORT ? '' : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT ? '' : '\x1b[0m'} ${process.env.PORT ? '' : '\x1b[36m'}[discord.short.anti-idle] Requesting Success${process.env.PORT ? '' : '\x1b[0m'}`);
+                if(typeof client.data.events['IDLEPING'] == 'function') client.data.events['IDLEPING']();
             })
             .catch(function(err) {
                 console.log(`${process.env.PORT ? '' : '\x1b[33m'}[${global.currentDS.name}]${process.env.PORT ? '' : '\x1b[0m'} ${process.env.PORT ? '' : '\x1b[31m'}[discord.short.anti-idle] Requesting Error:\n${process.env.PORT ? '' : '\x1b[0m'}` + err);
