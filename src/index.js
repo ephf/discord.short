@@ -26,7 +26,9 @@ class ShortClient {
             user: {},
             server: {}
         },
-        events: {}
+        events: {},
+        failedPermissions() {},
+        failedArguments() {}
     }
     /** @type {string} */
     prefix = '!';
@@ -78,6 +80,30 @@ class ShortClient {
         }
         this.name = name;
         global.currentDS = this;
+    }
+
+    /**
+     * ## Default Command Failed Permissions
+     * ```
+     * ds.defaultFailedPermissions(callback: Function);
+     * ```
+     * @param {Function} callback - **Argument:** `Callback Function`
+     * @returns {void}
+     */
+    defaultFailedPermissions(callback) {
+        this.data.failedPermissions = callback;
+    }
+
+    /**
+     * ## Default Command Failed Arguments
+     * ```
+     * ds.defaultFailedArguments(callback: Function);
+     * ```
+     * @param {Function} callback - **Argument:** `Callback Function`
+     * @returns {void}
+     */
+     defaultFailedArguments(callback) {
+        this.data.failedArguments = callback;
     }
 
     /**
@@ -234,7 +260,7 @@ class ShortClient {
      * ```
      * ds.bot.on(event: WSEventType, callback: Function);
      * ```
-     * @param {DSEvent} event - **Argument:** `Discord Event (Listed)`
+     * @param {DSEvent} event - **Argument:** `Discord.Short Event (Listed)`
      * @param {Function} callback - **Argument:** `Callback Function When Event Is Triggered`
      * @returns {void}
      * **Docs: {@link https://ephf.gitbook.io/discord-short/events Creating Bot Commands}**

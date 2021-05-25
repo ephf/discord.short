@@ -20,7 +20,7 @@ module.exports = {
                 for(command of ds.data.commands) {
                     let names = command.aliases || [];
                     names.push(command.name);
-                    for(name of names) {
+                    for(let name of names) {
                         const regex = new RegExp(`^\\${ds.prefix} *${name} +|^\\${ds.prefix} *${name}$`);
                         if(regex.test(m.content)) {
                             let hasPerm = true;
@@ -44,6 +44,90 @@ module.exports = {
                                     args,
                                     async send(value) {return await m.channel.send(value)}
                                 }
+                                let index = -1;
+                                const failArguments = async type => {
+                                    config.type = type;
+                                    config.argument = command.arguments[index];
+                                    config.number = index;
+                                    ds.data.config = config;
+                                    if(command.failedArguments) {
+                                        await command.failedArguments(config)
+                                    } else {
+                                        await ds.data.failedArguments(config);
+                                    }
+                                }
+                                if(command.arguments) for(let arg of command.arguments) {
+                                    index++;
+                                    if(arg.required && !args[index]) {
+                                        return await failArguments('missing');
+                                    }
+                                    if(arg.type == 'number') {
+                                        if(isNaN(Number(args[index]))) {
+                                            return await failArguments('incorrect');
+                                        } else {
+                                            args[index] = Number(args[index]);
+                                        }
+                                    }
+                                    if(arg.type == 'boolean') {
+                                        if(args[index] != 'true' && args[index] != 'false') {
+                                            return await failArguments('incorrect');
+                                        } else {
+                                            args[index] = args[index] == 'true' ? true : false;
+                                        }
+                                    }
+                                    if(arg.type == 'user') {
+                                        const rx = /^<@([0-9]+)>$|^<@!([0-9]+)>$/;
+                                        if(!rx.test(args[index])) {
+                                            return await failArguments('incorrect');
+                                        } else {
+                                            let id = rx.exec(args[index])[1] || rx.exec(args[index])[2];
+                                            if(!await m.guild.members.cache.get(id)) {
+                                                return await failArguments('notfound');
+                                            } else {
+                                                args[index] = await m.guild.members.cache.get(id);
+                                            }
+                                        }
+                                    }
+                                    if(arg.type == 'channel') {
+                                        const rx = /^<#([0-9]+)>$|^<#!([0-9]+)>$/;
+                                        if(!rx.test(args[index])) {
+                                            return await failArguments('incorrect');
+                                        } else {
+                                            let id = rx.exec(args[index])[1] || rx.exec(args[index])[2];
+                                            if(!await m.guild.channels.cache.get(id)) {
+                                                return await failArguments('notfound');
+                                            } else {
+                                                args[index] = await m.guild.channels.cache.get(id);
+                                            }
+                                        }
+                                    }
+                                    if(arg.type == 'role') {
+                                        const rx = /^<@([0-9]+)>$|^<@&([0-9]+)>$/;
+                                        if(!rx.test(args[index])) {
+                                            return await failArguments('incorrect');
+                                        } else {
+                                            let id = rx.exec(args[index])[1] || rx.exec(args[index])[2];
+                                            if(!await m.guild.roles.cache.get(id)) {
+                                                return await failArguments('notfound');
+                                            } else {
+                                                args[index] = await m.guild.roles.cache.get(id);
+                                            }
+                                        }
+                                    }
+                                    if(arg.type == 'mention') {
+                                        const rx = /^<@([0-9]+)>$|^<@!([0-9]+)>$|^<@&([0-9]+)>$/;
+                                        if(!rx.test(args[index])) {
+                                            return await failArguments('incorrect');
+                                        } else {
+                                            let id = rx.exec(args[index])[1] || rx.exec(args[index])[2] || rx.exec(args[index])[3];
+                                            if(!await m.guild.roles.cache.get(id) && !await m.guild.members.cache.get(id)) {
+                                                return await failArguments('notfound');
+                                            } else {
+                                                args[index] = await m.guild.roles.cache.get(id) || await m.guild.members.cache.get(id);
+                                            }
+                                        }
+                                    }
+                                }
                                 ds.data.config = config;
                                 await command.execute(config);
                                 return;
@@ -60,7 +144,11 @@ module.exports = {
                                     async send(value) {return await m.channel.send(value)}
                                 }
                                 ds.data.config = config;
-                                await command.failedPermissions(config);
+                                if(command.failedPermissions) {
+                                    command.failedPermissions(config)
+                                } else {
+                                    ds.data.failedPermissions(config)
+                                }
                                 return;
                             }
                         }
