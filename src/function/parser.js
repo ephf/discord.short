@@ -1,13 +1,5 @@
 const { Message } = require('discord.js');
 
-String.prototype.remFirst = function (item) {
-    let text = this;
-    text = text.split(item);
-    text.shift();
-    text = text.join(item);
-    return text;
-}
-
 module.exports = {
     /**
      * 
@@ -17,7 +9,7 @@ module.exports = {
         const ds = global.currentDS;
         try {
             if(ds.data.connected || !ds.settings.mongoConnect || !ds.config.mongo) {
-                for(command of ds.data.commands) {
+                for(let command of ds.data.commands) {
                     let names = command.aliases || [];
                     names.push(command.name);
                     for(let name of names) {
@@ -45,6 +37,15 @@ module.exports = {
                                     async send(value) {return await m.channel.send(value)}
                                 }
                                 let index = -1;
+                                if(ds.data.cooldowns[m.author.id] && ds.data.cooldowns[m.author.id][command.name]) {
+                                    config.timeleft = ds.data.cooldowns[m.author.id][command.name];
+                                    if(command.failedCooldown) {
+                                        await command.failedCooldown(config);
+                                    } else {
+                                        await ds.data.failedCooldown(config);
+                                    }
+                                    return;
+                                }
                                 const failArguments = async type => {
                                     config.type = type;
                                     config.argument = command.arguments[index];
@@ -130,6 +131,18 @@ module.exports = {
                                 }
                                 ds.data.config = config;
                                 await command.execute(config);
+                                if(command.cooldown) {
+                                    if(!ds.data.cooldowns[m.author.id]) ds.data.cooldowns[m.author.id] = {};
+                                    ds.data.cooldowns[m.author.id][command.name] = command.cooldown;
+                                    let time = 0;
+                                    let interval = setInterval(() => {
+                                        time++;
+                                        ds.data.cooldowns[m.author.id][command.name] = command.cooldown - time;
+                                        if(time >= command.cooldown) {
+                                            clearInterval(interval);
+                                        } 
+                                    }, 1000);
+                                }
                                 return;
                             } else {
                                 let args = m.content.replace(regex, '').replace(/^ */, '').split(/ +/);

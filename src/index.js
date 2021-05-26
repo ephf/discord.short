@@ -21,14 +21,15 @@ class ShortClient {
     data = {
         commands: [],
         connected: false,
-        onmessage() {},
         db: {
             user: {},
             server: {}
         },
         events: {},
         failedPermissions() {},
-        failedArguments() {}
+        failedArguments() {},
+        failedCooldown() {},
+        cooldowns: {}
     }
     /** @type {string} */
     prefix = '!';
@@ -102,8 +103,20 @@ class ShortClient {
      * @param {Function} callback - **Argument:** `Callback Function`
      * @returns {void}
      */
-     defaultFailedArguments(callback) {
+    defaultFailedArguments(callback) {
         this.data.failedArguments = callback;
+    }
+
+    /**
+     * ## Default Command Failed Cooldown
+     * ```
+     * ds.defaultFailedCooldown(callback: Function);
+     * ```
+     * @param {Function} callback - **Argument:** `Callback Function`
+     * @returns {void}
+     */
+    defaultFailedCooldown(callback) {
+        this.data.failedCooldown = callback;
     }
 
     /**

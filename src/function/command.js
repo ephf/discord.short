@@ -24,7 +24,7 @@ module.exports = class Command {
      *  name: String,
      *  description?: String,
      *  aliases?: String[],
-     *  setSlash?: Boolean, // description required
+     *  slash?: Boolean | 'both', // description required
      *  arguments?: Argument[],
      *  permissions?: import("discord.js").PermissionResolvable[],
      *  async execute({...}): Promise<void> // has to be async
@@ -39,8 +39,7 @@ module.exports = class Command {
      *  guild: Guild,
      *  label: String,
      *  args: String[],
-     *  send(text: String): Promise<Message>,
-     *  slashSend(reply: String): Promise<void> // only if its a slash command
+     *  send(text: String): Promise<Message>
      * });
      * ```
      * ## Failed Permissions
@@ -70,13 +69,26 @@ module.exports = class Command {
      *  send(text: String): Promise<Message>
      * });
      * ```
+     * ## Failed Cooldown
+     * ```
+     * await failedCooldwn({
+     *  message: Message,
+     *  author: User,
+     *  channel: Channel,
+     *  guild: Guild,
+     *  label: String,
+     *  args: String[],
+     *  timeleft: Number,
+     *  send(text: String): Promise<Message>
+     * });
+     * ```
      * **Docs: {@link https://ephf.gitbook.io/discord-short/creating-bot-commands Creating Bot Commands}**
      * 
      * @param {{
      *  name: String;
      *  description?: String;
      *  aliases?: String[];
-     *  setSlash?: Boolean;
+     *  slash?: Boolean | 'both';
      *  arguments?: Argument[];
      *  permissions?: import("discord.js").PermissionResolvable[];
      *  execute({information}: {
@@ -87,7 +99,6 @@ module.exports = class Command {
      *      label: String;
      *      args: String[];
      *      send(text: String): Promise<void>;
-     *      slashSend(reply: String): Promise<void>;
      *  }): Promise<void>;
      *  failedPermissions?({information}: {
      *      message: Message;
@@ -110,13 +121,23 @@ module.exports = class Command {
      *      type: FailedArgumentType;
      *      send(text: String): Promise<Message>;
      *  }): Promise<void>;
+     *  failedCooldown?({information}: {
+     *      message: Message;
+     *      author: User;
+     *      channel: Channel;
+     *      guild: Guild;
+     *      label: String;
+     *      args: String[];
+     *      timeleft: String;
+     *      send(text: String): Promise<Message>;
+     *  }): Promise<void>;
      * }} config - **Argument:** `Command Configuration`
      */
     constructor(config) {
         if(!config.name) error('Your command is missing a name');
         if(!config.execute) error('Your command is missing an execute function');
 
-        if(config.setSlash) {
+        if(config.slash || config.slash == 'both') {
             if(!config.description) error('Your command is missing a description');
 
             global.currentDS.bot.on('ready', async () => {
@@ -154,7 +175,7 @@ module.exports = class Command {
                     data: {
                         name: config.name,
                         description: config.description,
-                        options: options || [
+                        options: options.length > 0 ? options : [
                             {
                                 name: 'arguments',
                                 description: 'The arguments after the command',
@@ -178,33 +199,82 @@ module.exports = class Command {
                             args[i] = arg.value;
                         })
                     }
+                    const channel = global.currentDS.bot.channels.cache.get(interaction.channel_id);
                     if(command === config.name) {
-                        await config.execute({
-                            slashSend(content) {
-                                global.currentDS.bot.api.interactions(interaction.id, interaction.token).callback.post({
-                                    data: {
-                                        type: 4,
-                                        data: {
-                                            content
+                        let hasPerms = true;
+                        let perms = [];
+                        if(config.permissions) {
+                            global.currentDS.bot.guilds.cache.get(interaction.guild_id).members.cache.map(member => {
+                                if(member.id == interaction.member.user.id) {
+                                    for(let perm of config.permissions) {
+                                        if(!member.permissions.has(perm)) {
+                                            hasPerms = false;
+                                            perms.push(perm);
                                         }
                                     }
-                                });
+                                }
+                            });
+                        }
+                        let interacted = false;
+                        const information = {
+                            async send(content) {
+                                if(!interacted) {
+                                    interacted = true;
+                                    return await global.currentDS.bot.api.interactions(interaction.id, interaction.token).callback.post({
+                                        data: {
+                                            type: 4,
+                                            data: {
+                                                content
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    return await channel.send(content);
+                                }
                             },
                             interaction,
-                            channel: global.currentDS.bot.channels.cache.get(interaction.channel_id),
+                            channel,
                             guild: global.currentDS.bot.guilds.cache.get(interaction.guild_id),
                             author: interaction.member.user,
-                            args,
-                            send(content) {
-                                global.currentDS.bot.channels.cache.get(interaction.channel_id).send(content);
+                            args
+                        }
+                        if(hasPerms) {
+                            if(global.currentDS.data.cooldowns[interaction.member.user.id] && global.currentDS.data.cooldowns[interaction.member.user.id][config.name]) {
+                                information.timeleft = global.currentDS.data.cooldowns[interaction.member.user.id][config.name];
+                                if(config.failedCooldown) {
+                                    await config.failedCooldown(information);
+                                } else {
+                                    await global.currentDS.data.failedCooldown(information);
+                                }
+                                return;
                             }
-                        });
+                            await config.execute(information);
+                            if(config.cooldown) {
+                                if(!global.currentDS.data.cooldowns[interaction.member.user.id]) global.currentDS.data.cooldowns[interaction.member.user.id] = {};
+                                global.currentDS.data.cooldowns[interaction.member.user.id][config.name] = config.cooldown;
+                                let time = 0;
+                                let interval = setInterval(() => {
+                                    time++;
+                                    global.currentDS.data.cooldowns[interaction.member.user.id][config.name] = config.cooldown - time;
+                                    if(time >= config.cooldown) {
+                                        clearInterval(interval);
+                                    } 
+                                }, 1000);
+                            }
+                        } else {
+                            if(config.failedPermissions) {
+                                await config.failedPermissions(information);
+                            } else {
+                                global.currentDS.data.failedPermissions(information);
+                            }
+                        }
                     }
                 });
             });
         } else {
             global.currentDS.data.commands.push(config);
         }
+        if(config.slash == 'both') global.currentDS.data.commands.push(config);
         global.currentDS.commands.set(config.name, config);
     }
 }
