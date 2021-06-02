@@ -238,11 +238,11 @@ class ShortClient {
    * @returns {Promise<void>}
    */
   async deleteSlashCommand(id, guild) {
-    await this.bot.api
-      .applications(this.bot.user.id)
-      .guilds(guild)
-      .commands(id)
-      .delete();
+    let app = await this.bot.api.applications(this.bot.user.id);
+    if (guild != undefined) {
+      app = await app.guilds(guild);
+    }
+    await app.commands(id).delete();
   }
 
   /**
@@ -255,10 +255,11 @@ class ShortClient {
    * @returns {Promise<Object[]>}
    */
   async getSlashCommands(guild) {
-    return await this.bot.api
-      .applications(this.bot.user.id)
-      .guilds(guild)
-      .commands.get();
+    let app = await this.bot.api.applications(this.bot.user.id);
+    if (guild != undefined) {
+      app = await app.guilds(guild);
+    }
+    return await app.commands.get();
   }
 
   /**

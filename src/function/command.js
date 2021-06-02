@@ -162,26 +162,29 @@ module.exports = class Command {
           }
         }
 
-        await global.currentDS.bot.api
-          .applications(global.currentDS.bot.user.id)
-          .guilds(config.guild)
-          .commands.post({
-            data: {
-              name: config.name,
-              description: config.description,
-              options:
-                options.length > 0
-                  ? options
-                  : [
-                      {
-                        name: "arguments",
-                        description: "The arguments after the command",
-                        required: false,
-                        type: 3,
-                      },
-                    ],
-            },
-          });
+        let app = await global.currentDS.bot.api.applications(
+          global.currentDS.bot.user.id
+        );
+        if (config.guild != undefined) {
+          app = await app.guilds(config.guild);
+        }
+        await app.commands.post({
+          data: {
+            name: config.name,
+            description: config.description,
+            options:
+              options.length > 0
+                ? options
+                : [
+                    {
+                      name: "arguments",
+                      description: "The arguments after the command",
+                      required: false,
+                      type: 3,
+                    },
+                  ],
+          },
+        });
 
         global.currentDS.bot.ws.on(
           "INTERACTION_CREATE",
