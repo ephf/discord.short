@@ -5,13 +5,15 @@
   </p>
 </div>
 
-# Discord.Short  (Discord.js Addon)
+# Discord.Short (Discord.js Addon)
 
 💵 Discord.js addon to allow for bots to be made faster and for free!
 
 📚 Discord.Short has a complete guide!
 
 🔎 Discord.Short complete JSDoc typings!
+
+🍎 Discord.Short was recently taken down an republished. There will be lots of changes.
 
 # Docs / Installation
 
