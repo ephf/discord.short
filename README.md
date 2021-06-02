@@ -1,6 +1,5 @@
 <div align="center">
   <p>
-    <a href="https://discord.gg/EqkxHnFkns"><img src="https://img.shields.io/discord/839993561280938035?color=7289da&logo=discord&logoColor=white" alt="Discord server" /></a>
     <a href="https://www.npmjs.com/package/discord.short"><img src="https://img.shields.io/npm/dt/discord.short.svg?maxAge=3600" alt="NPM downloads" /></a>
   </p>
 </div>
@@ -13,7 +12,7 @@
 
 🔎 Discord.Short complete JSDoc typings!
 
-🍎 Discord.Short was recently taken down an republished. There will be lots of changes.
+🪓 Discord.Short was recently taken down an republished. This package has been split into two. [Other Package](https://npmjs.com/package/discord.short-multirun)
 
 # Docs / Installation
 
@@ -39,4 +38,4 @@ ISC License
 
 # Extra
 
-⚠ `53.9+ MB` size due to `node.exe`. This is needed for CLI. (Path: `discord.short > cli > node.exe`)
+📦 Download [other package](https://npmjs.com/package/discord.short-multirun) to run multiple bots, along with a CLI mode.

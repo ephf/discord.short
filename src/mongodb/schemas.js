@@ -1,15 +1,22 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
-const user = model('user', new Schema({
+const user = model(
+  "user",
+  new Schema({
     _id: String,
-    data: Object
-}));
+    data: Object,
+  })
+);
 
-const server = model('server', new Schema({
+const server = model(
+  "server",
+  new Schema({
     _id: String,
-    data: Object
-}));
+    data: Object,
+  })
+);
 
 module.exports = {
-    user, server
-}
+  user,
+  server,
+};

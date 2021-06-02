@@ -28,11 +28,6 @@
   ],
   "author": "ephf",
   "license": "ISC",
-  "bin": {
-    "ds": "./cli/ds.js",
-    "dsb": "./cli/dsb.js",
-    "dsr": "./cli/dsr.js"
-  },
   "bugs": {
     "url": "https://github.com/ephf/discord.short/issues"
   },
