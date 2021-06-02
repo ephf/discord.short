@@ -19,7 +19,7 @@
 Make sure you have NPM downloaded on your machine, then run the command
 
 ```bash
-$ npm install discord.short -g
+$ npm install discord.short
 ```
 
 [Discord.Short Docs (link)](https://ephf.gitbook.io/discord-short/)
