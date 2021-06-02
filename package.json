@@ -1,0 +1,22 @@
+{
+  "name": "discord.short-multirun",
+  "version": "1.0.0",
+  "description": "run multiple discord bots at a time",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "run",
+    "multiple",
+    "discord.js",
+    "discord.short"
+  ],
+  "bin": {
+    "ds": "./cli/ds.js",
+    "dsb": "./cli/dsb.js",
+    "dsr": "./cli/dsr.js"
+  },
+  "author": "ephf",
+  "license": "ISC"
+}
