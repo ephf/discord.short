@@ -78,6 +78,9 @@ module.exports = {
                     if (arg.required && !args[index]) {
                       return await failArguments("missing");
                     }
+                    if (!arg.required && !args[index]) {
+                      break;
+                    }
                     if (arg.type == "number") {
                       if (isNaN(Number(args[index]))) {
                         return await failArguments("incorrect");

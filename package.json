@@ -1,12 +1,13 @@
 {
   "dependencies": {
+    "convert-svg-to-png": "^0.5.0",
     "discord.js": "^12.5.3",
     "mongoose": "^5.12.7",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"
   },
   "name": "discord.short",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "make discord bots faster",
   "main": "src/index.js",
   "scripts": {

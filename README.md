@@ -12,6 +12,8 @@
 
 🔎 Discord.Short complete JSDoc typings!
 
+🎨 Discord.Short comes with a canvas module!
+
 🪓 Discord.Short was recently taken down an republished. This package has been split into two. [Other Package](https://npmjs.com/package/discord.short-multirun)
 
 # Docs / Installation

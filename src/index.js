@@ -556,6 +556,7 @@ class ShortClient {
 
 const Discord = {
   ShortClient,
+  Canvas: require("./canvas/canvas"),
   ...require("discord.js"),
 };
 
